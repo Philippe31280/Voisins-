@@ -1,6 +1,6 @@
 # Voisins d'à côté
 
-Un QR code affiché dans chaque logement. Les voyageurs le scannent et laissent un petit mot (prénom, âge, message). Leurs voisins peuvent répondre. **Tout s'efface automatiquement 48 h après la publication.**
+Un QR code affiché dans chaque logement. Les voyageurs le scannent et laissent un petit mot : seuls ou en couple, avec prénom(s), âge(s) et message. Leurs voisins peuvent répondre. **Tout s'efface automatiquement 48 h après la publication.**
 
 - Pas de compte, pas d'e-mail, pas de numéro de téléphone.
 - Réservé aux 18 ans et plus.

@@ -34,7 +34,7 @@
     </div>
     <ul class="promesses">
       <li>Pas de compte, pas d'e-mail, pas de numéro.</li>
-      <li>Juste un prénom, un âge et un petit mot.</li>
+      <li>Juste vos prénoms, vos âges et un petit mot.</li>
       <li>Tout s'efface automatiquement après 48&nbsp;h.</li>
     </ul>
   </section>
@@ -44,14 +44,29 @@
     <button class="back" type="button" data-go="accueil">← Retour</button>
     <h1>Présentez-vous</h1>
     <form id="form-post" novalidate>
+      <fieldset class="seg" id="f-qui">
+        <legend>Vous êtes</legend>
+        <label><input type="radio" name="qui" value="1"><span>Seul(e)</span></label>
+        <label><input type="radio" name="qui" value="2" checked><span>En couple</span></label>
+      </fieldset>
       <div class="row">
         <label class="field grow">
-          <span>Prénom</span>
+          <span id="l-prenom1">Prénom 1</span>
           <input id="f-prenom" name="prenom" maxlength="30" autocomplete="given-name" required placeholder="Camille">
         </label>
         <label class="field age">
           <span>Âge</span>
           <input id="f-age" name="age" type="number" inputmode="numeric" min="18" max="110" required placeholder="34">
+        </label>
+      </div>
+      <div class="row" id="personne2">
+        <label class="field grow">
+          <span>Prénom 2</span>
+          <input id="f-prenom2" name="prenom2" maxlength="30" autocomplete="off" placeholder="Julien">
+        </label>
+        <label class="field age">
+          <span>Âge</span>
+          <input id="f-age2" name="age2" type="number" inputmode="numeric" min="18" max="110" placeholder="37">
         </label>
       </div>
       <label class="field">
@@ -60,7 +75,7 @@
       </label>
       <label class="check">
         <input id="f-ok" type="checkbox" required>
-        <span>J'ai 18 ans ou plus. J'accepte que mon prénom, mon âge et mon message soient visibles par les voisins pendant 48&nbsp;h.</span>
+        <span id="l-ok">Nous avons 18 ans ou plus. Nous acceptons que nos prénoms, nos âges et notre message soient visibles par les voisins pendant 48&nbsp;h.</span>
       </label>
       <p class="error" id="form-error" role="alert" hidden></p>
       <button class="btn primary full" type="submit" id="btn-publier">Publier mon annonce</button>
@@ -86,7 +101,7 @@
 <template id="tpl-post">
   <article class="post">
     <header class="post-head">
-      <p class="who"><strong class="p-prenom"></strong>, <span class="p-age"></span> ans <span class="badge" hidden>Vous</span></p>
+      <p class="who"><span class="p-who"></span> <span class="badge" hidden>Vous</span></p>
       <p class="when"><span class="p-ago"></span> · <span class="p-exp"></span></p>
     </header>
     <p class="p-message"></p>

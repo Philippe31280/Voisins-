@@ -111,8 +111,19 @@ function updateTimes() {
 function renderPost(p, ownerToken) {
   const el = $("#tpl-post").content.firstElementChild.cloneNode(true);
   el.dataset.id = p.id;
-  $(".p-prenom", el).textContent = p.prenom;
-  $(".p-age", el).textContent = p.age;
+  // « Camille, 34 ans & Julien, 37 ans »
+  const who = $(".p-who", el);
+  p.personnes.forEach((pers, i) => {
+    if (i > 0) {
+      const sep = document.createElement("span");
+      sep.className = "sep";
+      sep.textContent = "&";
+      who.append(sep);
+    }
+    const name = document.createElement("strong");
+    name.textContent = pers.prenom;
+    who.append(name, `, ${pers.age} ans`);
+  });
   $(".p-ago", el).textContent = ago(p.createdAt);
   $(".p-exp", el).textContent = remaining(p.expiresAt);
   $(".p-message", el).textContent = p.message;
@@ -195,12 +206,32 @@ function initForm() {
   count();
   $("#f-prenom").value = storage.get("voisins:prenom", "");
 
+  const couple = () => $("#f-qui input:checked").value === "2";
+  const MSG = {
+    couple: "Bonjour, nous venons de louer cet endroit pour 3 jours. Si vous êtes disponibles pour prendre un verre, ce serait avec plaisir !",
+    seul: "Bonjour, je viens de louer cet endroit pour 3 jours. Si vous êtes disponibles pour prendre un verre, ce serait avec plaisir !",
+  };
+  const syncQui = () => {
+    // On adapte le message proposé tant que la personne ne l'a pas modifié.
+    if (Object.values(MSG).includes(msg.value)) {
+      msg.value = couple() ? MSG.couple : MSG.seul;
+      count();
+    }
+    $("#personne2").hidden = !couple();
+    $("#l-prenom1").textContent = couple() ? "Prénom 1" : "Prénom";
+    $("#l-ok").textContent = couple()
+      ? "Nous avons 18 ans ou plus. Nous acceptons que nos prénoms, nos âges et notre message soient visibles par les voisins pendant 48 h."
+      : "J'ai 18 ans ou plus. J'accepte que mon prénom, mon âge et mon message soient visibles par les voisins pendant 48 h.";
+  };
+  $("#f-qui").addEventListener("change", syncQui);
+  syncQui();
+
   $("#form-post").addEventListener("submit", async (e) => {
     e.preventDefault();
     const err = $("#form-error");
     err.hidden = true;
     if (!$("#f-ok").checked) {
-      err.textContent = "Cochez la case pour confirmer que vous avez 18 ans ou plus.";
+      err.textContent = "Cochez la case pour confirmer l'âge (18 ans ou plus).";
       err.hidden = false;
       return;
     }
@@ -210,7 +241,13 @@ function initForm() {
       const prenom = $("#f-prenom").value;
       const data = await api("posts", {
         method: "POST",
-        body: JSON.stringify({ prenom, age: Number($("#f-age").value), message: msg.value }),
+        body: JSON.stringify({
+          personnes: [
+            { prenom, age: Number($("#f-age").value) },
+            ...(couple() ? [{ prenom: $("#f-prenom2").value, age: Number($("#f-age2").value) }] : []),
+          ],
+          message: msg.value,
+        }),
       });
       storage.set(MINE_KEY, { ...mine(), [data.post.id]: data.ownerToken });
       storage.set("voisins:prenom", prenom.trim());

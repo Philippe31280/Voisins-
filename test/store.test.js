@@ -10,7 +10,8 @@ function setup() {
   return { clock, store: createStore(() => redis, clock.now) };
 }
 
-const input = { prenom: "Camille", age: 34, message: "Un verre ce soir ?" };
+const input = { personnes: [{ prenom: "Camille", age: 34 }], message: "Un verre ce soir ?" };
+const couple = { personnes: [{ prenom: "Camille", age: 34 }, { prenom: "Julien", age: 37 }], message: "Un verre ?" };
 
 test("une annonce publiée apparaît sans son jeton de propriétaire", async () => {
   const { store } = setup();
@@ -46,11 +47,11 @@ test("tout disparaît après 48 h, réponses comprises", async () => {
 
 test("les annonces les plus récentes sont en premier", async () => {
   const { store, clock } = setup();
-  await store.createPost("les-pins", { ...input, prenom: "A" });
+  await store.createPost("les-pins", { ...input, personnes: [{ prenom: "A", age: 30 }] });
   clock.advance(1000);
-  await store.createPost("les-pins", { ...input, prenom: "B" });
+  await store.createPost("les-pins", couple);
   const list = await store.listPosts("les-pins");
-  assert.deepEqual(list.map((p) => p.prenom), ["B", "A"]);
+  assert.deepEqual(list.map((p) => p.personnes.map((x) => x.prenom).join(" & ")), ["Camille & Julien", "A"]);
 });
 
 test("retirer une annonce l'efface", async () => {
@@ -70,8 +71,11 @@ test("limite horaire", async () => {
 
 test("validation des saisies", () => {
   assert.ok(parsePost(input).value);
-  assert.match(parsePost({ ...input, age: 16 }).error, /18 ans/);
-  assert.ok(parsePost({ ...input, prenom: "  " }).error);
+  assert.deepEqual(parsePost(couple).value.personnes.map((p) => p.age), [34, 37]);
+  assert.match(parsePost({ ...couple, personnes: [couple.personnes[0], { prenom: "Léa", age: 16 }] }).error, /2e personne.*18 ans/);
+  assert.match(parsePost({ ...couple, personnes: [couple.personnes[0], { prenom: " ", age: 30 }] }).error, /prénom de la 2e/);
+  assert.ok(parsePost({ ...input, personnes: [] }).error);
+  assert.ok(parsePost({ ...input, personnes: [...couple.personnes, { prenom: "X", age: 40 }] }).error);
   assert.ok(parsePost({ ...input, message: "x".repeat(281) }).error);
   assert.ok(parseReply({ prenom: "Léo", message: "" }).error);
   assert.equal(parseLieu("Les-Pins").value, "les-pins");
