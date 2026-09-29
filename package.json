@@ -1,0 +1,14 @@
+{
+  "name": "voisins",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Un QR code, et les voisins d'une location se proposent un verre. Tout s'efface après 48 h.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node dev-server.js",
+    "test": "node --test"
+  }
+}

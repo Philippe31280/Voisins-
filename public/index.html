@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Voisins d'à côté</title>
+<meta name="description" content="Vos voisins sont juste à côté. Un verre, une discussion ? Tout s'efface après 48 h.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <span class="brand"><span class="dot" aria-hidden="true"></span>Voisins d'à côté</span>
+    <span class="lieu" id="lieu-nom"></span>
+  </header>
+
+  <!-- Lien incomplet -->
+  <section id="ecran-sans-lieu" hidden>
+    <h1>Ce lien n'est pas complet.</h1>
+    <p class="lead">Scannez le QR code affiché dans votre logement.</p>
+    <p class="small">Vous êtes propriétaire ? <a href="/qr.html">Créez l'affiche de votre logement</a>.</p>
+  </section>
+
+  <!-- Accueil -->
+  <section id="ecran-accueil" hidden>
+    <h1>Vous avez des voisins juste à côté.</h1>
+    <p class="lead">Envie de prendre un verre ou d'avoir une conversation&nbsp;? N'hésitez pas&nbsp;: peut-être qu'ils sont dans la même logique que vous.</p>
+    <div class="actions">
+      <button class="btn primary" id="btn-presenter" type="button">Me présenter</button>
+      <button class="btn ghost" id="btn-voir" type="button">Voir qui est là <span class="count" id="count-accueil"></span></button>
+    </div>
+    <ul class="promesses">
+      <li>Pas de compte, pas d'e-mail, pas de numéro.</li>
+      <li>Juste un prénom, un âge et un petit mot.</li>
+      <li>Tout s'efface automatiquement après 48&nbsp;h.</li>
+    </ul>
+  </section>
+
+  <!-- Formulaire -->
+  <section id="ecran-form" hidden>
+    <button class="back" type="button" data-go="accueil">← Retour</button>
+    <h1>Présentez-vous</h1>
+    <form id="form-post" novalidate>
+      <div class="row">
+        <label class="field grow">
+          <span>Prénom</span>
+          <input id="f-prenom" name="prenom" maxlength="30" autocomplete="given-name" required placeholder="Camille">
+        </label>
+        <label class="field age">
+          <span>Âge</span>
+          <input id="f-age" name="age" type="number" inputmode="numeric" min="18" max="110" required placeholder="34">
+        </label>
+      </div>
+      <label class="field">
+        <span>Votre petit mot <em class="counter" id="f-count"></em></span>
+        <textarea id="f-message" name="message" maxlength="280" rows="4" required>Bonjour, nous venons de louer cet endroit pour 3 jours. Si vous êtes disponibles pour prendre un verre, ce serait avec plaisir !</textarea>
+      </label>
+      <label class="check">
+        <input id="f-ok" type="checkbox" required>
+        <span>J'ai 18 ans ou plus. J'accepte que mon prénom, mon âge et mon message soient visibles par les voisins pendant 48&nbsp;h.</span>
+      </label>
+      <p class="error" id="form-error" role="alert" hidden></p>
+      <button class="btn primary full" type="submit" id="btn-publier">Publier mon annonce</button>
+    </form>
+  </section>
+
+  <!-- Tableau -->
+  <section id="ecran-tableau" hidden>
+    <div class="board-head">
+      <h1>Qui est là&nbsp;?</h1>
+      <button class="btn small primary" id="btn-me-presenter" type="button">Me présenter</button>
+    </div>
+    <p class="small">Mis à jour automatiquement. Chaque annonce disparaît 48&nbsp;h après sa publication.</p>
+    <p class="notice" id="notice" role="status" hidden></p>
+    <div id="liste" class="liste" aria-live="polite"></div>
+    <div id="vide" class="vide" hidden>
+      <p class="vide-titre">Personne pour l'instant.</p>
+      <p>Soyez le premier à dire bonjour&nbsp;: vos voisins verront votre message en scannant le même QR code.</p>
+    </div>
+  </section>
+</main>
+
+<template id="tpl-post">
+  <article class="post">
+    <header class="post-head">
+      <p class="who"><strong class="p-prenom"></strong>, <span class="p-age"></span> ans <span class="badge" hidden>Vous</span></p>
+      <p class="when"><span class="p-ago"></span> · <span class="p-exp"></span></p>
+    </header>
+    <p class="p-message"></p>
+    <ul class="replies"></ul>
+    <div class="post-actions">
+      <button class="btn small ghost js-repondre" type="button">Répondre</button>
+      <button class="link danger js-retirer" type="button" hidden>Retirer mon annonce</button>
+    </div>
+    <div class="confirm" hidden>
+      <span>Retirer définitivement votre annonce&nbsp;?</span>
+      <button class="btn small danger-btn js-confirm" type="button">Oui, retirer</button>
+      <button class="link js-annuler" type="button">Annuler</button>
+    </div>
+    <form class="reply-form" hidden novalidate>
+      <input class="r-prenom" maxlength="30" placeholder="Votre prénom" aria-label="Votre prénom" autocomplete="given-name">
+      <textarea class="r-message" maxlength="200" rows="2" placeholder="Avec plaisir ! On est au 2e étage, vers 19 h ?" aria-label="Votre réponse"></textarea>
+      <p class="error r-error" role="alert" hidden></p>
+      <button class="btn small primary" type="submit">Envoyer</button>
+    </form>
+  </article>
+</template>
+
+<script src="/app.js" type="module"></script>
+</body>
+</html>

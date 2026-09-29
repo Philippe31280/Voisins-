@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Affiche QR · Voisins d'à côté</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .affiche {
+    background: #ffffff; color: #16263a;
+    border: 2px solid #16263a; border-radius: 24px;
+    padding: 32px 28px; margin-top: 28px;
+    display: grid; gap: 18px; justify-items: center; text-align: center;
+  }
+  .affiche h2 { font: 800 30px/1.1 var(--display); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+  .affiche p { margin: 0; font-size: 17px; max-width: 30ch; }
+  .affiche .qr svg { width: 220px; height: 220px; display: block; }
+  .affiche .petit { font-size: 13px; color: #56667a; }
+  .affiche .sun { width: 18px; height: 18px; border-radius: 50%; background: #f2c230; }
+  .url { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; margin-top: 12px; }
+  @media print {
+    body { background: #fff; }
+    .no-print { display: none !important; }
+    .wrap { padding: 0; max-width: none; }
+    .affiche { margin: 20mm auto 0; max-width: 150mm; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="no-print">
+    <header class="top"><span class="brand"><span class="dot" aria-hidden="true"></span>Voisins d'à côté</span><span class="lieu">Espace propriétaire</span></header>
+    <h1>Créez l'affiche de votre logement</h1>
+    <p class="lead">Tous les logements voisins doivent utiliser <strong>le même nom de lieu</strong> : c'est ce qui permet aux voyageurs de se voir entre eux.</p>
+    <form id="form-qr" novalidate>
+      <label class="field">
+        <span>Nom du lieu (immeuble, résidence, rue…)</span>
+        <input id="q-nom" required maxlength="60" placeholder="Résidence Les Pins">
+      </label>
+      <p class="error" id="q-error" role="alert" hidden></p>
+      <button class="btn primary" type="submit">Créer l'affiche</button>
+    </form>
+  </div>
+
+  <div id="resultat" hidden>
+    <div class="affiche">
+      <span class="sun" aria-hidden="true"></span>
+      <h2>Vous avez des voisins juste à côté&nbsp;!</h2>
+      <p>Envie de prendre un verre ou d'avoir une conversation&nbsp;? N'hésitez pas, peut-être qu'ils sont dans la même logique que vous.</p>
+      <div class="qr" id="qr"></div>
+      <p><strong>Scannez avec l'appareil photo de votre téléphone.</strong></p>
+      <p class="petit">Sans compte, sans e-mail. Tout s'efface après 48&nbsp;h.</p>
+    </div>
+    <p class="url no-print">Lien de l'affiche : <span id="lien"></span></p>
+    <div class="actions no-print">
+      <button class="btn primary" type="button" id="btn-imprimer">Imprimer l'affiche</button>
+      <a class="btn ghost" id="btn-tester" href="#" target="_blank" rel="noopener">Tester le lien</a>
+    </div>
+  </div>
+</main>
+
+<script src="/qrcode.js"></script>
+<script>
+  function slugify(s) {
+    return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40).replace(/-+$/, "");
+  }
+
+  document.getElementById("form-qr").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const err = document.getElementById("q-error");
+    const slug = slugify(document.getElementById("q-nom").value);
+    if (slug.length < 2) {
+      err.textContent = "Indiquez un nom d'au moins 2 lettres.";
+      err.hidden = false;
+      return;
+    }
+    err.hidden = true;
+    const url = `${location.origin}/?lieu=${slug}`;
+    const qr = qrcode(0, "M");
+    qr.addData(url);
+    qr.make();
+    document.getElementById("qr").innerHTML = qr.createSvgTag({ cellSize: 8, margin: 0, scalable: true });
+    document.getElementById("lien").textContent = url;
+    document.getElementById("btn-tester").href = url;
+    document.getElementById("resultat").hidden = false;
+  });
+
+  document.getElementById("btn-imprimer").addEventListener("click", () => window.print());
+</script>
+</body>
+</html>
