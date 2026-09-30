@@ -104,6 +104,12 @@ input:focus, textarea:focus { border-color: var(--accent); outline: none; }
 .seg input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .seg input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
 .who .sep { color: var(--muted); margin: 0 4px; }
+.field > label { font-weight: 600; }
+.hint { margin: 0; font-weight: 400; font-size: 14px; color: var(--muted); }
+.idees { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 4px; }
+.idee { font: 500 14px var(--body); color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+.idee[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
+.msg-tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .check { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--muted); }
 .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--accent); }
 .error { color: var(--danger); margin: 0; font-size: 14px; }

@@ -69,10 +69,16 @@
           <input id="f-age2" name="age2" type="number" inputmode="numeric" min="18" max="110" placeholder="37">
         </label>
       </div>
-      <label class="field">
-        <span>Votre petit mot <em class="counter" id="f-count"></em></span>
-        <textarea id="f-message" name="message" maxlength="280" rows="4" required>Bonjour, nous venons de louer cet endroit pour 3 jours. Si vous êtes disponibles pour prendre un verre, ce serait avec plaisir !</textarea>
-      </label>
+      <div class="field">
+        <label for="f-message">Votre petit mot <em class="counter" id="f-count"></em></label>
+        <p class="hint">Choisissez une idée, puis modifiez-la comme vous voulez. Ou écrivez le vôtre.</p>
+        <div class="idees" id="f-idees" role="group" aria-label="Idées de message"></div>
+        <textarea id="f-message" name="message" maxlength="280" rows="4" required placeholder="Écrivez votre message ici…"></textarea>
+        <div class="msg-tools">
+          <span class="hint">✏️ Touchez le texte pour le modifier.</span>
+          <button class="link" type="button" id="btn-effacer">Écrire le mien</button>
+        </div>
+      </div>
       <label class="check">
         <input id="f-ok" type="checkbox" required>
         <span id="l-ok">Nous avons 18 ans ou plus. Nous acceptons que nos prénoms, nos âges et notre message soient visibles par les voisins pendant 48&nbsp;h.</span>

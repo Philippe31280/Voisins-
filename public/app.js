@@ -207,16 +207,71 @@ function initForm() {
   $("#f-prenom").value = storage.get("voisins:prenom", "");
 
   const couple = () => $("#f-qui input:checked").value === "2";
-  const MSG = {
-    couple: "Bonjour, nous venons de louer cet endroit pour 3 jours. Si vous êtes disponibles pour prendre un verre, ce serait avec plaisir !",
-    seul: "Bonjour, je viens de louer cet endroit pour 3 jours. Si vous êtes disponibles pour prendre un verre, ce serait avec plaisir !",
+  // Idées de message, au « nous » (couple) ou au « je » (seul).
+  const IDEES = [
+    {
+      label: "🍷 Un verre",
+      couple: "Bonjour, nous venons d'arriver pour quelques jours. Si vous êtes disponibles pour prendre un verre, ce serait avec plaisir !",
+      seul: "Bonjour, je viens d'arriver pour quelques jours. Si vous êtes disponibles pour prendre un verre, ce serait avec plaisir !",
+    },
+    {
+      label: "🌅 Apéro ce soir",
+      couple: "Bonsoir les voisins ! Nous prenons l'apéro vers 19 h, vous êtes les bienvenus. Répondez-nous ici !",
+      seul: "Bonsoir les voisins ! Je prends l'apéro vers 19 h, vous êtes les bienvenus. Répondez-moi ici !",
+    },
+    {
+      label: "💬 Discuter",
+      couple: "Bonjour ! Nous sommes de passage et serions ravis de discuter un moment avec vous.",
+      seul: "Bonjour ! Je suis de passage et serais ravi(e) de discuter un moment avec vous.",
+    },
+    {
+      label: "📍 Bons plans",
+      couple: "Bonjour ! Nous découvrons le coin. Si vous avez des bons plans (restos, balades), parlons-en autour d'un verre !",
+      seul: "Bonjour ! Je découvre le coin. Si vous avez des bons plans (restos, balades), parlons-en autour d'un verre !",
+    },
+    {
+      label: "☕ Café demain",
+      couple: "Bonjour ! Partants pour un café demain matin ? Répondez-nous ici, on s'organise.",
+      seul: "Bonjour ! Partants pour un café demain matin ? Répondez-moi ici, on s'organise.",
+    },
+  ];
+  const texte = (idee) => (couple() ? idee.couple : idee.seul);
+  // L'idée dont le texte est encore intact (non modifié), sinon null.
+  const ideeIntacte = () => IDEES.find((i) => msg.value === i.couple || msg.value === i.seul) ?? null;
+  const marquerIdee = () => {
+    const actuelle = ideeIntacte();
+    for (const [n, b] of [...$("#f-idees").children].entries()) b.setAttribute("aria-pressed", String(IDEES[n] === actuelle));
   };
+  $("#f-idees").replaceChildren(
+    ...IDEES.map((idee) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "idee";
+      b.textContent = idee.label;
+      b.addEventListener("click", () => {
+        msg.value = texte(idee);
+        count();
+        marquerIdee();
+      });
+      return b;
+    }),
+  );
+  msg.addEventListener("input", marquerIdee);
+  $("#btn-effacer").addEventListener("click", () => {
+    msg.value = "";
+    count();
+    marquerIdee();
+    msg.focus();
+  });
+
   const syncQui = () => {
-    // On adapte le message proposé tant que la personne ne l'a pas modifié.
-    if (Object.values(MSG).includes(msg.value)) {
-      msg.value = couple() ? MSG.couple : MSG.seul;
+    // On passe du « je » au « nous » tant que l'idée choisie n'a pas été modifiée.
+    const idee = ideeIntacte();
+    if (idee) {
+      msg.value = texte(idee);
       count();
     }
+    marquerIdee();
     $("#personne2").hidden = !couple();
     $("#l-prenom1").textContent = couple() ? "Prénom 1" : "Prénom";
     $("#l-ok").textContent = couple()
@@ -224,6 +279,7 @@ function initForm() {
       : "J'ai 18 ans ou plus. J'accepte que mon prénom, mon âge et mon message soient visibles par les voisins pendant 48 h.";
   };
   $("#f-qui").addEventListener("change", syncQui);
+  msg.value = texte(IDEES[0]);
   syncQui();
 
   $("#form-post").addEventListener("submit", async (e) => {
